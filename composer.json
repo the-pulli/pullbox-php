@@ -1,5 +1,5 @@
 {
-    "name": "pulli/pullbox-php",
+    "name": "pulli/pullbox",
     "description": "Static methods for using AppleScript and DEVONthink",
     "type": "library",
     "keywords": [
