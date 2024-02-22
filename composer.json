@@ -1,0 +1,48 @@
+{
+    "name": "pulli/pullbox-php",
+    "description": "Static methods for using AppleScript and DEVONthink",
+    "type": "library",
+    "keywords": [
+        "pulli",
+        "applescript",
+        "devonthink"
+    ],
+    "homepage": "https://github.com/the-pulli/pullbox-php",
+    "authors": [
+        {
+            "name": "PuLLi",
+            "email": "the@pulli.dev",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "pestphp/pest": "^2.16"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Pulli\\Pullbox\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pulli\\Pullbox\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+    },
+    "scripts": {
+        "test": "vendor/bin/pest"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
