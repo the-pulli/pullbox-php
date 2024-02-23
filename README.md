@@ -1,4 +1,4 @@
-# Some class wrappers around AppleScript and DEVONthink
+# Static methods for using AppleScript and DEVONthink
 
 [![release](https://img.shields.io/github/release/the-pulli/pullbox-php.svg?style=flat-square)](https://github.com/the-pulli/pullbox-php/releases)
 [![packagist](https://img.shields.io/packagist/v/pulli/pullbox.svg?style=flat-square)](https://packagist.org/packages/pulli/pullbox)
