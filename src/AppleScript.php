@@ -2,6 +2,8 @@
 
 namespace Pulli\Pullbox;
 
+use Illuminate\Support\Collection;
+
 class AppleScript
 {
     public static function intro(): string
@@ -10,6 +12,37 @@ class AppleScript
         use AppleScript version "2.8" -- Latest AppleScript Version
         use scripting additions
 
+        APPLESCRIPT;
+    }
+
+    public static function displayDialog(string $message, ?string $title = null, array $options = []): string
+    {
+        $intro = static::intro();
+        $defaults = Collection::mapToCollectionFrom(array_merge(['answer' => false, 'buttons' => ['OK']], $options));
+        $answer = $defaults->get('answer') ? ' default answer ""' : '';
+        $buttons = $defaults->get('buttons');
+        $defaultButton = $buttons->first();
+        $cancelButton = $buttons->last();
+        $buttonString = 'buttons {"';
+        $buttonString .= $buttons->join('", "');
+        $buttonString .= "\"} default button \"$defaultButton\" cancel button \"$cancelButton\"";
+
+        return <<<APPLESCRIPT
+        $intro
+        try
+            set theReturnedValue to (display dialog "$message" $buttonString$answer with title "$title")
+            if button returned of theReturnedValue is "$defaultButton" then
+                if text returned of theReturnedValue is not "" then
+                    return text returned of theReturnedValue
+                else
+                    return
+                end if
+            end if
+        on error errorMessage number errorNumber
+            if errorNumber is equal to -128 -- aborted by user
+                return
+            end if
+        end try
         APPLESCRIPT;
     }
 

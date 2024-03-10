@@ -13,6 +13,36 @@ it('can generate the AppleScript intro', function () {
         ->toBe($expected);
 });
 
+it('can generate the AppleScript to display a dialog', function (string $message, ?string $title, array $options, string $expectedAppleScript) {
+    $expected = <<<APPLESCRIPT
+    use AppleScript version "2.8" -- Latest AppleScript Version
+    use scripting additions
+    
+    try
+        set theReturnedValue to (display dialog "$message" $expectedAppleScript with title "$title")
+        if button returned of theReturnedValue is "OK" then
+            if text returned of theReturnedValue is not "" then
+                return text returned of theReturnedValue
+            else
+                return
+            end if
+        end if
+    on error errorMessage number errorNumber
+        if errorNumber is equal to -128 -- aborted by user
+            return
+        end if
+    end try
+    APPLESCRIPT;
+
+    expect(AppleScript::displayDialog($message, $title, $options))
+        ->toBe($expected);
+})->with([
+    'message and title' => ['Test', 'Test', [], 'buttons {"OK"} default button "OK" cancel button "OK"'],
+    'with two custom buttons' => ['Test', null, ['buttons' => ['OK', 'Cancel']], 'buttons {"OK", "Cancel"} default button "OK" cancel button "Cancel"'],
+    'with more than two custom buttons' => ['Test', null, ['buttons' => ['OK', 'Middle', 'Cancel']], 'buttons {"OK", "Middle", "Cancel"} default button "OK" cancel button "Cancel"'],
+    'message with empty title' => ['Test', null, [], 'buttons {"OK"} default button "OK" cancel button "OK"'],
+]);
+
 it('can generate the AppleScript to display a notification', function (string $message, ?string $title, string $expectedAppleScript) {
     $expected = <<<APPLESCRIPT
     use AppleScript version "2.8" -- Latest AppleScript Version
