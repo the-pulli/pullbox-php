@@ -8,6 +8,12 @@ class Dialog
     {
         $applescript = AppleScript::displayDialog($message, $title, $options);
 
-        return trim(`osascript -e '$applescript'`);
+        $answer = trim(`osascript -e '$applescript'`);
+
+        if (empty($answer)) {
+            return null;
+        }
+
+        return $answer;
     }
 }
