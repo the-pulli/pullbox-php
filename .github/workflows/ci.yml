@@ -23,4 +23,4 @@ jobs:
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Execute tests (Unit and Feature tests) via PEST
-        run: vendor/bin/pest
+        run: vendor/bin/pest --exclude-group=mac

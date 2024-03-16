@@ -22,4 +22,4 @@ it('can generate the AppleScript to play a System Sound', function (SystemSound 
     'Sosumi' => [SystemSound::Sosumi, 'Sosumi'],
     'Submarine' => [SystemSound::Submarine, 'Submarine'],
     'Tink' => [SystemSound::Tink, 'Tink'],
-]);
+])->group('mac');

@@ -2,6 +2,7 @@
 
 namespace Pulli\Pullbox\Sounds;
 
+use Pulli\Pullbox\Exceptions\NotRunningMacException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -22,17 +23,22 @@ enum SystemSound: string
     case Submarine = 'Submarine';
     case Tink = 'Tink';
 
+    /**
+     * @throws NotRunningMacException
+     */
     public function filepath(): string
     {
+        $systemSoundDir = '/System/Library/Sounds';
         $suffix = '.aiff';
 
-        return collect(
+        return !file_exists($systemSoundDir) ? throw new NotRunningMacException() : collect(
             Finder::create()
-                ->in('/System/Library/Sounds')
+                ->in($systemSoundDir)
                 ->name("*$suffix")
                 ->files()
         )
             ->flatMap(fn (SplFileInfo $fileInfo) => [$fileInfo->getBasename($suffix) => $fileInfo->getRealPath()])
             ->get($this->value);
+
     }
 }
