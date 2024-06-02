@@ -20,6 +20,7 @@
         "pulli/collection-macros": "^0.2.2"
     },
     "require-dev": {
+        "laravel/pint": "^1.16",
         "pestphp/pest": "^2.16"
     },
     "license": "MIT",

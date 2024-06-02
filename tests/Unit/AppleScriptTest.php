@@ -3,7 +3,7 @@
 use Pulli\Pullbox\AppleScript;
 
 it('can generate the AppleScript intro', function () {
-    $expected = <<<APPLESCRIPT
+    $expected = <<<'APPLESCRIPT'
     use AppleScript version "2.8" -- Latest AppleScript Version
     use scripting additions
     
@@ -83,7 +83,7 @@ it('can generate the AppleScript to export a Music playlist as with different fi
 ]);
 
 it('can generate the AppleScript to return the path to a DEVONthink file', function () {
-    $expected = <<<APPLESCRIPT
+    $expected = <<<'APPLESCRIPT'
     use AppleScript version "2.8" -- Latest AppleScript Version
     use scripting additions
     
@@ -127,7 +127,7 @@ it('can generate the AppleScripts to import multiple files to DEVONthink', funct
 ]);
 
 it('can generate the AppleScript to save plain text to a DEVONthink record', function () {
-    $expected = <<<APPLESCRIPT
+    $expected = <<<'APPLESCRIPT'
     use AppleScript version "2.8" -- Latest AppleScript Version
     use scripting additions
     

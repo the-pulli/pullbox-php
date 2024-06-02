@@ -8,7 +8,7 @@ class AppleScript
 {
     public static function intro(): string
     {
-        return <<<APPLESCRIPT
+        return <<<'APPLESCRIPT'
         use AppleScript version "2.8" -- Latest AppleScript Version
         use scripting additions
 
@@ -50,7 +50,7 @@ class AppleScript
     {
         $intro = static::intro();
 
-        if (!is_null($title) && $title !== '') {
+        if (! is_null($title) && $title !== '') {
             return <<<APPLESCRIPT
             $intro
             display notification "$message" with title "$title"
@@ -133,6 +133,38 @@ class AppleScript
             set theRecord to get record with uuid "$uuid"
             set plain text of theRecord to "$text"
         end tell
+        APPLESCRIPT;
+    }
+
+    public static function applicationsFolder(): string
+    {
+        $intro = static::intro();
+
+        return <<<APPLESCRIPT
+          $intro
+          set theApplicationsFolder to path to applications folder
+          return (POSIX path) of theApplicationsFolder
+        APPLESCRIPT;
+    }
+
+    public static function moveApp(string $name, string $path, bool $launch = true): string
+    {
+        $intro = static::intro();
+
+        return <<<APPLESCRIPT
+          $intro
+          set theApplicationsFolder to path to applications folder
+          try
+            tell application "$name" to quit
+          on error errMsg
+          end try
+          delay 3
+          tell application "Finder"
+            move (POSIX file "$path") as alias to theApplicationsFolder with replacing
+          end tell
+          if $launch then
+            tell application "$name" to activate
+          end if
         APPLESCRIPT;
     }
 }

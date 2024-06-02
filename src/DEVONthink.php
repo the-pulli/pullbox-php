@@ -10,7 +10,7 @@ class DEVONthink
 
         $path = `osascript -e '$applescript'`;
 
-        return chop($path);
+        return rtrim($path);
     }
 
     public static function importRecords(array|string $paths): void
