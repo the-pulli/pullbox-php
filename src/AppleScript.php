@@ -150,6 +150,7 @@ class AppleScript
     public static function moveApp(string $name, string $path, bool $launch = true): string
     {
         $intro = static::intro();
+        $launch = $launch ? 'true' : 'false';
 
         return <<<APPLESCRIPT
           $intro
