@@ -19,6 +19,12 @@ class System
 
     public static function moveApp(string $name, string $path, bool $launch = true): void
     {
+        $appExtension = '.app';
+
+        if (! str_ends_with($appExtension, $name)) {
+            $name .= $appExtension;
+        }
+
         $applescript = AppleScript::moveApp($name, $path, $launch);
 
         system("osascript -e '$applescript'");
