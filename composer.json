@@ -17,11 +17,12 @@
     ],
     "require": {
         "php": ">=8.2",
-        "pulli/collection-macros": "^0.2.2"
+        "pulli/collection-macros": "^0.2.2",
+        "rodneyrehm/plist": "^2.0"
     },
     "require-dev": {
         "laravel/pint": "^1.16",
-        "pestphp/pest": "^2.16"
+        "pestphp/pest": "^v4.0.3"
     },
     "license": "MIT",
     "autoload": {

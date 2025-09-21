@@ -31,7 +31,7 @@ enum SystemSound: string
         $systemSoundDir = '/System/Library/Sounds';
         $suffix = '.aiff';
 
-        return ! file_exists($systemSoundDir) ? throw new NotRunningMacException() : collect(
+        return ! file_exists($systemSoundDir) ? throw new NotRunningMacException : collect(
             Finder::create()
                 ->in($systemSoundDir)
                 ->name("*$suffix")
