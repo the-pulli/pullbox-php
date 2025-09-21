@@ -24,12 +24,14 @@ class System
         system("osascript -e '$applescript'");
     }
 
-    public static function versionNumber(string $appName, string $key = 'CFBundleVersion'): ?string
+    public static function versionNumber(string $appName, string $key = 'CFBundleVersion', bool $displayExceptions = true): ?string
     {
         try {
             $list = new CFPropertyList(sprintf('%s%s.app/Contents/Info.plist', static::applicationsFolder(), $appName));
         } catch (IOException $e) {
-            Dialog::display($e->getMessage(), static::titleError('Bundle', $appName));
+            if ($displayExceptions) {
+                Dialog::display($e->getMessage(), static::titleError('Bundle', $appName));
+            }
 
             return null;
         }
@@ -37,10 +39,12 @@ class System
         $version = Collection::make($list->toArray())->get($key);
 
         if (is_null($version)) {
-            Dialog::display(
-                message: sprintf('%s version number could be parsed.', $appName),
-                title: static::titleError('Version number', $appName)
-            );
+            if ($displayExceptions) {
+                Dialog::display(
+                    message: sprintf('%s version number could be parsed.', $appName),
+                    title: static::titleError('Version number', $appName)
+                );
+            }
 
             return null;
         }
