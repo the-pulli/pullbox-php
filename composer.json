@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.4",
         "pulli/collection-macros": "^0.2.2",
         "rodneyrehm/plist": "^2.0"
     },
