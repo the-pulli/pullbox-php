@@ -1,6 +1,6 @@
 <?php
 
-use Pulli\Pullbox\Sounds\SystemSound;
+use Pulli\Pullbox\Enums\SystemSound;
 
 it('can generate the AppleScript to play a System Sound', function (SystemSound $sound, string $expectedSound) {
     $expected = "/System/Library/Sounds/$expectedSound.aiff";

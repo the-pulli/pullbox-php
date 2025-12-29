@@ -2,7 +2,7 @@
 
 namespace Pulli\Pullbox;
 
-use Pulli\Pullbox\Sounds\SystemSound;
+use Pulli\Pullbox\Enums\SystemSound;
 
 class Music
 {

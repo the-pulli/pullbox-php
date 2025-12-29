@@ -3,6 +3,7 @@
 namespace Pulli\Pullbox;
 
 use Illuminate\Support\Collection;
+use Pulli\Pullbox\Enums\PlaylistExportFormat;
 
 class AppleScript
 {
@@ -18,14 +19,13 @@ class AppleScript
     public static function displayDialog(string $message, ?string $title = null, array $options = []): string
     {
         $intro = static::intro();
-        $defaults = Collection::mapToCollectionFrom(array_merge(['answer' => false, 'buttons' => ['OK']], $options));
+        $defaults = Collection::make(array_merge(['answer' => false, 'buttons' => ['OK']], $options));
         $answer = $defaults->get('answer') ? ' default answer ""' : '';
-        $buttons = $defaults->get('buttons');
+        $buttons = Collection::make($defaults->get('buttons', []));
         $defaultButton = $buttons->first();
         $cancelButton = $buttons->last();
-        $buttonString = 'buttons {"';
-        $buttonString .= $buttons->join('", "');
-        $buttonString .= "\"} default button \"$defaultButton\" cancel button \"$cancelButton\"";
+
+        $buttonString = sprintf('buttons {"%s"} default button "%s" cancel button "%s"', $buttons->join('", "'), $defaultButton, $cancelButton);
 
         return <<<APPLESCRIPT
         $intro
@@ -63,17 +63,10 @@ class AppleScript
         APPLESCRIPT;
     }
 
-    public static function musicExportPlaylist(string $name, string $to, string $format = 'xml'): string
+    public static function musicExportPlaylist(string $name, string $to, string|PlaylistExportFormat $format = PlaylistExportFormat::XML): string
     {
-        $formats = [
-            'm3u' => 'M3U',
-            'm3u8' => 'M3U8',
-            'plain_text' => 'plain text',
-            'unicode_text' => 'Unicode text',
-            'xml' => 'XML',
-        ];
+        $format = PlaylistExportFormat::fromInput($format)->value;
 
-        $format = $formats[$format] ?? 'XML';
         $intro = static::intro();
 
         return <<<APPLESCRIPT
