@@ -13,35 +13,94 @@ it('can generate the AppleScript intro', function () {
         ->toBe($expected);
 });
 
-it('can generate the AppleScript to display a dialog', function (string $message, ?string $title, array $options, string $expectedAppleScript) {
-    $expected = <<<APPLESCRIPT
-    use AppleScript version "2.8" -- Latest AppleScript Version
-    use scripting additions
-    
-    try
-        set theReturnedValue to (display dialog "$message" $expectedAppleScript with title "$title")
-        if button returned of theReturnedValue is "OK" then
-            if text returned of theReturnedValue is not "" then
-                return text returned of theReturnedValue
-            else
-                return
-            end if
-        end if
-    on error errorMessage number errorNumber
-        if errorNumber is equal to -128 -- aborted by user
-            return
-        end if
-    end try
-    APPLESCRIPT;
+it('can generate the AppleScript to display a dialog with buttons only', function () {
+    $result = AppleScript::displayDialog('Test', 'Title');
 
-    expect(AppleScript::displayDialog($message, $title, $options))
-        ->toBe($expected);
-})->with([
-    'message and title' => ['Test', 'Test', [], 'buttons {"OK"} default button "OK" cancel button "OK"'],
-    'with two custom buttons' => ['Test', null, ['buttons' => ['OK', 'Cancel']], 'buttons {"OK", "Cancel"} default button "OK" cancel button "Cancel"'],
-    'with more than two custom buttons' => ['Test', null, ['buttons' => ['OK', 'Middle', 'Cancel']], 'buttons {"OK", "Middle", "Cancel"} default button "OK" cancel button "Cancel"'],
-    'message with empty title' => ['Test', null, [], 'buttons {"OK"} default button "OK" cancel button "OK"'],
-]);
+    expect($result)
+        ->toContain('display dialog "Test" buttons {"OK"} with title "Title"')
+        ->toContain('return button returned of theReturnedValue');
+});
+
+it('can generate the AppleScript to display a dialog with default and cancel buttons', function () {
+    $result = AppleScript::displayDialog('Test', 'Title', [
+        'buttons' => ['Save', 'Cancel'],
+        'defaultButton' => 'Save',
+        'cancelButton' => 'Cancel',
+    ]);
+
+    expect($result)
+        ->toContain('buttons {"Save", "Cancel"} default button "Save" cancel button "Cancel" with title "Title"')
+        ->toContain('return button returned of theReturnedValue');
+});
+
+it('can generate the AppleScript to display a dialog with three buttons', function () {
+    $result = AppleScript::displayDialog('Test', null, [
+        'buttons' => ['Save', 'Discard', 'Cancel'],
+        'defaultButton' => 1,
+        'cancelButton' => 3,
+    ]);
+
+    expect($result)
+        ->toContain('buttons {"Save", "Discard", "Cancel"} default button 1 cancel button 3')
+        ->not->toContain('with title');
+});
+
+it('can generate the AppleScript to display a dialog with text input', function () {
+    $result = AppleScript::displayDialog('Enter name:', 'Input', [
+        'answer' => true,
+    ]);
+
+    expect($result)
+        ->toContain('default answer ""')
+        ->toContain('return text returned of theReturnedValue');
+});
+
+it('can generate the AppleScript to display a dialog with pre-filled text input', function () {
+    $result = AppleScript::displayDialog('Name:', 'Input', [
+        'answer' => 'default value',
+    ]);
+
+    expect($result)
+        ->toContain('default answer "default value"')
+        ->toContain('return text returned of theReturnedValue');
+});
+
+it('can generate the AppleScript to display a dialog with hidden answer', function () {
+    $result = AppleScript::displayDialog('Password:', 'Auth', [
+        'answer' => true,
+        'hiddenAnswer' => true,
+    ]);
+
+    expect($result)
+        ->toContain('default answer "" with hidden answer')
+        ->toContain('return text returned of theReturnedValue');
+});
+
+it('can generate the AppleScript to display a dialog with icon', function () {
+    $result = AppleScript::displayDialog('Warning!', 'Alert', [
+        'icon' => 'caution',
+    ]);
+
+    expect($result)
+        ->toContain('with icon caution');
+});
+
+it('can generate the AppleScript to display a dialog with giving up after', function () {
+    $result = AppleScript::displayDialog('Auto-dismiss', 'Timeout', [
+        'givingUpAfter' => 10,
+    ]);
+
+    expect($result)
+        ->toContain('giving up after 10');
+});
+
+it('can generate the AppleScript to display a dialog without a title', function () {
+    $result = AppleScript::displayDialog('No title');
+
+    expect($result)
+        ->toContain('display dialog "No title" buttons {"OK"}')
+        ->not->toContain('with title');
+});
 
 it('can generate the AppleScript to display a notification', function (string $message, ?string $title, string $expectedAppleScript) {
     $expected = <<<APPLESCRIPT
@@ -130,7 +189,7 @@ it('can generate the AppleScript to save plain text to a DEVONthink record', fun
     $expected = <<<'APPLESCRIPT'
     use AppleScript version "2.8" -- Latest AppleScript Version
     use scripting additions
-    
+
     tell application id "DNtp"
         set theRecord to get record with uuid "uuid"
         set plain text of theRecord to "Test"
@@ -139,4 +198,41 @@ it('can generate the AppleScript to save plain text to a DEVONthink record', fun
 
     expect(AppleScript::devonthinkSavePlainTextToRecord('Test', 'uuid'))
         ->toBe($expected);
+});
+
+it('can generate the AppleScript to get the applications folder', function () {
+    $result = AppleScript::applicationsFolder();
+
+    expect($result)
+        ->toContain('use AppleScript version "2.8"')
+        ->toContain('use scripting additions')
+        ->toContain('set theApplicationsFolder to path to applications folder')
+        ->toContain('return (POSIX path) of theApplicationsFolder');
+});
+
+it('can generate the AppleScript to move an app', function (string $name, string $path, bool $launch, string $launchString) {
+    $result = AppleScript::moveApp($name, $path, $launch);
+
+    expect($result)
+        ->toContain('use AppleScript version "2.8"')
+        ->toContain('use scripting additions')
+        ->toContain('set theApplicationsFolder to path to applications folder')
+        ->toContain("tell application \"$name\" to quit")
+        ->toContain("move (POSIX file \"$path\") as alias to theApplicationsFolder with replacing")
+        ->toContain("if $launchString then")
+        ->toContain("tell application \"$name\" to activate");
+})->with([
+    'with launch' => ['MyApp', '/tmp/MyApp.app', true, 'true'],
+    'without launch' => ['MyApp', '/tmp/MyApp.app', false, 'false'],
+]);
+
+it('escapes special characters in AppleScript strings', function () {
+    expect(AppleScript::escapeString('Hello "World"'))
+        ->toBe('Hello \\"World\\"');
+
+    expect(AppleScript::escapeString('path\\to\\file'))
+        ->toBe('path\\\\to\\\\file');
+
+    expect(AppleScript::escapeString('no special chars'))
+        ->toBe('no special chars');
 });

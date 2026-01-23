@@ -21,7 +21,7 @@ class System
     {
         $appExtension = '.app';
 
-        if (! str_ends_with($appExtension, $name)) {
+        if (! str_ends_with($name, $appExtension)) {
             $name .= $appExtension;
         }
 
