@@ -2,6 +2,57 @@
 
 All notable changes to `pullbox` will be documented in this file
 
+## v1.0.0 - 2026-01-24
+
+### v1.0.0 — Stable Release
+
+First stable release of Pullbox. The API is now considered stable and follows semantic versioning.
+
+#### Security: Shell Injection Fix
+
+All facade classes (`Dialog`, `Notification`, `Music`, `System`, `DEVONthink`) now use `proc_open` with array-based commands instead of `system()` / backtick operators. Scripts are piped to `osascript` via stdin, completely eliminating shell injection risks.
+
+**Before (vulnerable):**
+
+```php
+system("osascript -e '$applescript'");  // single-quote breakout possible
+
+```
+**After (safe):**
+
+```php
+AppleScript::execute($script);  // piped via stdin, no shell interpolation
+
+```
+#### New Features
+
+- **`AppleScript::execute()`** — Safe fire-and-forget script execution via stdin
+- **`AppleScript::executeAndCapture()`** — Safe script execution with output capture
+- **`Notification::display()`** — Added `$subtitle` and `$soundName` parameters, completing the full `display notification` spec
+- **`AppleScript::displayNotification()`** — Added `$subtitle` and `$soundName` parameters
+
+#### Documentation
+
+- Added `UPGRADE.md` with migration guides for v0.1.x → v0.2.0 and v0.2.0 → v1.0.0
+
+#### Full Notification Example
+
+```php
+Notification::display(
+    'Download complete',
+    'My App',
+    'All files processed',
+    'Glass'
+);
+
+```
+#### Breaking Changes from v0.2.0
+
+- Facade classes no longer use shell execution — if you relied on shell-level behavior (env var expansion in paths), pass fully resolved values instead
+- `Notification::display()` and `AppleScript::displayNotification()` have new optional parameters (existing calls are compatible)
+
+See [UPGRADE.md](UPGRADE.md) for the full migration guide.
+
 ## v0.2.0 - 2026-01-24
 
 ### What's Changed
