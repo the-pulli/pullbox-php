@@ -2,6 +2,16 @@
 
 All notable changes to `pullbox` will be documented in this file
 
+## v2.0.1 - 2026-01-24
+
+### What's Changed
+
+- Fix `playSystemSound` test to be marked as mac-only (requires macOS filesystem)
+- Add PHP 8.5 to CI test matrix
+- Add credits section to README
+
+**Full Changelog**: https://github.com/the-pulli/pullbox-php/compare/v2.0.0...v2.0.1
+
 ## v2.0.0 - 2026-01-24
 
 ### What's Changed
