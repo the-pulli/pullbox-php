@@ -599,6 +599,10 @@ composer test
 vendor/bin/pest tests/Unit/AppleScriptTest.php
 ```
 
+## Credits
+
+- [PuLLi](https://github.com/the-pulli)
+
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
