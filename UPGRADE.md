@@ -1,5 +1,50 @@
 # Upgrade Guide
 
+## From v1.0.0 to v2.0.0
+
+### DEVONthink Class Expanded
+
+The `DEVONthink` class has been rewritten with all 119 AppleScript commands. Existing public methods (`pathToRecord`, `importRecords`, `savePlainTextToRecord`, `getRecordContents`) remain unchanged. All new methods are additive.
+
+### New Testing Helpers
+
+Both `AppleScript` and `DEVONthink` now support a `fake()` mode for unit testing without executing scripts:
+
+```php
+// Fake mode — captures scripts without executing
+AppleScript::fake();
+DEVONthink::fake();
+
+// Run a method
+DEVONthink::delete('uuid');
+
+// Inspect what would have been executed
+DEVONthink::lastScript();   // Full AppleScript string
+AppleScript::lastScript();  // Script passed to osascript
+AppleScript::lastCommand(); // Command array (e.g. ['osascript', '-'])
+
+// Restore real execution
+AppleScript::unfake();
+DEVONthink::unfake();
+```
+
+### New Enums
+
+Three new backed string enums:
+
+- `RecordType` — DEVONthink record types (bookmark, markdown, group, etc.)
+- `UpdateMode` — Modes for the `update` command (appending, inserting, replacing)
+- `SummaryType` — Summary output formats (markdown, rich, sheet, simple)
+
+### AI & Chat Methods (DEVONthink 4)
+
+Nine methods require DEVONthink 4 and are annotated with `@since DEVONthink 4`:
+
+- `getChatCapabilitiesForEngine()`, `getChatModelsForEngine()`, `getChatResponseForMessage()`
+- `downloadImageForPrompt()`, `summarizeText()`
+- `summarizeAnnotationsOf()`, `summarizeContentsOf()`, `summarizeMentionsOf()`
+- `transcribe()`
+
 ## From v0.2.0 to v1.0.0
 
 ### Shell Execution Changed

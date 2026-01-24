@@ -2,6 +2,38 @@
 
 All notable changes to `pullbox` will be documented in this file
 
+## v2.0.0 - 2026-01-24
+
+### What's Changed
+
+#### New Features
+
+- **DEVONthink class** — Complete rewrite with all 119 AppleScript commands organized into 17 categories: Record CRUD, Record Access, Record Content, Custom Meta Data, Search & Lookup, Import & Export, Web Capture & Download, Conversion, Text Content, OCR, Database Operations, Thumbnails, Versions, AI & Chat, Feeds, Sheets, UI Dialogs, Windows & Tabs, Progress Indicator, Workspaces, Smart Rules, Imprinting, and Misc Operations
+- **AI & Chat methods** (DEVONthink 4) — `getChatCapabilitiesForEngine`, `getChatModelsForEngine`, `getChatResponseForMessage`, `downloadImageForPrompt`, `summarizeText`, `summarizeAnnotationsOf`, `summarizeContentsOf`, `summarizeMentionsOf`, `transcribe`
+- **New enums** — `RecordType` (17 cases), `UpdateMode` (3 cases), `SummaryType` (4 cases)
+- **Testing helpers** — `AppleScript::fake()`/`unfake()`/`lastScript()`/`lastCommand()` and `DEVONthink::fake()`/`unfake()`/`lastScript()` for unit testing without executing scripts
+
+#### Bug Fixes
+
+- **Heredoc brace interpolation** — Fixed PHP `{$var}` in heredocs consuming curly braces needed by AppleScript record literals in `createRecordWith`, `merge`, `summarizeAnnotationsOf`, `summarizeContentsOf`, `summarizeMentionsOf`
+
+#### Internal
+
+- Extracted `captureList()` helper to eliminate repeated AppleScript list-iteration boilerplate across 15+ methods
+- Extracted shared `run()` method in `AppleScript` class (from v1.0.0 refactor)
+
+#### Tests
+
+- Added 162 new tests covering all DEVONthink commands, Dialog, Notification, Music, and System facades (206 total, 295 assertions)
+- All facade tests use the `fake()` pattern — no macOS or DEVONthink required
+
+#### Documentation
+
+- Comprehensive DEVONthink section in README with usage examples and method tables
+- AI & Chat section explicitly marked as DEVONthink 4 only
+- New enums documented (RecordType, UpdateMode, SummaryType)
+- UPGRADE.md updated with migration guide
+
 ## v1.0.0 - 2026-01-24
 
 ### v1.0.0 — Stable Release
@@ -12,18 +44,6 @@ First stable release of Pullbox. The API is now considered stable and follows se
 
 All facade classes (`Dialog`, `Notification`, `Music`, `System`, `DEVONthink`) now use `proc_open` with array-based commands instead of `system()` / backtick operators. Scripts are piped to `osascript` via stdin, completely eliminating shell injection risks.
 
-**Before (vulnerable):**
-
-```php
-system("osascript -e '$applescript'");  // single-quote breakout possible
-
-```
-**After (safe):**
-
-```php
-AppleScript::execute($script);  // piped via stdin, no shell interpolation
-
-```
 #### New Features
 
 - **`AppleScript::execute()`** — Safe fire-and-forget script execution via stdin
@@ -35,17 +55,6 @@ AppleScript::execute($script);  // piped via stdin, no shell interpolation
 
 - Added `UPGRADE.md` with migration guides for v0.1.x → v0.2.0 and v0.2.0 → v1.0.0
 
-#### Full Notification Example
-
-```php
-Notification::display(
-    'Download complete',
-    'My App',
-    'All files processed',
-    'Glass'
-);
-
-```
 #### Breaking Changes from v0.2.0
 
 - Facade classes no longer use shell execution — if you relied on shell-level behavior (env var expansion in paths), pass fully resolved values instead

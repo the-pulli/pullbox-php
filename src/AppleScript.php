@@ -7,30 +7,69 @@ use Pulli\Pullbox\Enums\PlaylistExportFormat;
 
 class AppleScript
 {
+    private static bool $testing = false;
+
+    private static ?string $lastScript = null;
+
+    private static ?array $lastCommand = null;
+
+    public static function fake(): void
+    {
+        static::$testing = true;
+        static::$lastScript = null;
+        static::$lastCommand = null;
+    }
+
+    public static function unfake(): void
+    {
+        static::$testing = false;
+        static::$lastScript = null;
+        static::$lastCommand = null;
+    }
+
+    public static function lastScript(): ?string
+    {
+        return static::$lastScript;
+    }
+
+    public static function lastCommand(): ?array
+    {
+        return static::$lastCommand;
+    }
+
     public static function execute(string $script): void
     {
-        $process = proc_open(
-            ['osascript', '-'],
-            [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
-            $pipes
-        );
-
-        fwrite($pipes[0], $script);
-        fclose($pipes[0]);
-        fclose($pipes[1]);
-        fclose($pipes[2]);
-        proc_close($process);
+        static::run(['osascript', '-'], $script);
     }
 
     public static function executeAndCapture(string $script): string
     {
+        return static::run(['osascript', '-'], $script);
+    }
+
+    public static function runCommand(array $command): void
+    {
+        static::run($command);
+    }
+
+    private static function run(array $command, ?string $stdin = null): string
+    {
+        static::$lastCommand = $command;
+        static::$lastScript = $stdin;
+
+        if (static::$testing) {
+            return '';
+        }
+
         $process = proc_open(
-            ['osascript', '-'],
+            $command,
             [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
             $pipes
         );
 
-        fwrite($pipes[0], $script);
+        if ($stdin !== null) {
+            fwrite($pipes[0], $stdin);
+        }
         fclose($pipes[0]);
 
         $output = stream_get_contents($pipes[1]);
