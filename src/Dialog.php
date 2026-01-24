@@ -6,9 +6,9 @@ class Dialog
 {
     public static function display(string $message, ?string $title, array $options = []): ?string
     {
-        $applescript = AppleScript::displayDialog($message, $title, $options);
-
-        $answer = trim(`osascript -e '$applescript'`);
+        $answer = AppleScript::executeAndCapture(
+            AppleScript::displayDialog($message, $title, $options)
+        );
 
         if (empty($answer)) {
             return null;

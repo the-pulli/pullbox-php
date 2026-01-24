@@ -6,11 +6,7 @@ class DEVONthink
 {
     public static function pathToRecord(string $uuid): string
     {
-        $applescript = AppleScript::devonthinkPathToRecord($uuid);
-
-        $path = `osascript -e '$applescript'`;
-
-        return rtrim($path);
+        return AppleScript::executeAndCapture(AppleScript::devonthinkPathToRecord($uuid));
     }
 
     public static function importRecords(array|string $paths): void
@@ -18,15 +14,13 @@ class DEVONthink
         $paths = is_string($paths) ? [$paths] : $paths;
 
         foreach (AppleScript::devonthinkImportRecords($paths) as $applescript) {
-            system("osascript -e '$applescript'");
+            AppleScript::execute($applescript);
         }
     }
 
     public static function savePlainTextToRecord(string $text, string $uuid): void
     {
-        $applescript = AppleScript::devonthinkSavePlainTextToRecord($text, $uuid);
-
-        system("osascript -e '$applescript'");
+        AppleScript::execute(AppleScript::devonthinkSavePlainTextToRecord($text, $uuid));
     }
 
     public static function getRecordContents(string $uuid): string
@@ -38,6 +32,15 @@ class DEVONthink
     {
         $path = static::pathToRecord($uuid);
 
-        system("open '$path'");
+        $process = proc_open(
+            ['open', $path],
+            [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+            $pipes
+        );
+
+        fclose($pipes[0]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        proc_close($process);
     }
 }

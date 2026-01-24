@@ -7,6 +7,40 @@ use Pulli\Pullbox\Enums\PlaylistExportFormat;
 
 class AppleScript
 {
+    public static function execute(string $script): void
+    {
+        $process = proc_open(
+            ['osascript', '-'],
+            [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+            $pipes
+        );
+
+        fwrite($pipes[0], $script);
+        fclose($pipes[0]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        proc_close($process);
+    }
+
+    public static function executeAndCapture(string $script): string
+    {
+        $process = proc_open(
+            ['osascript', '-'],
+            [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+            $pipes
+        );
+
+        fwrite($pipes[0], $script);
+        fclose($pipes[0]);
+
+        $output = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        proc_close($process);
+
+        return trim($output);
+    }
+
     public static function escapeString(string $value): string
     {
         return str_replace(
@@ -101,23 +135,30 @@ class AppleScript
         APPLESCRIPT;
     }
 
-    public static function displayNotification(string $message, ?string $title = null): string
+    public static function displayNotification(string $message, ?string $title = null, ?string $subtitle = null, ?string $soundName = null): string
     {
         $intro = static::intro();
         $message = static::escapeString($message);
 
-        if (! is_null($title) && $title !== '') {
-            $title = static::escapeString($title);
+        $parts = [];
 
-            return <<<APPLESCRIPT
-            $intro
-            display notification "$message" with title "$title"
-            APPLESCRIPT;
+        if ($title !== null && $title !== '') {
+            $parts[] = sprintf('with title "%s"', static::escapeString($title));
         }
+
+        if ($subtitle !== null && $subtitle !== '') {
+            $parts[] = sprintf('subtitle "%s"', static::escapeString($subtitle));
+        }
+
+        if ($soundName !== null && $soundName !== '') {
+            $parts[] = sprintf('sound name "%s"', static::escapeString($soundName));
+        }
+
+        $params = $parts !== [] ? ' '.implode(' ', $parts) : '';
 
         return <<<APPLESCRIPT
         $intro
-        display notification "$message"
+        display notification "$message"$params
         APPLESCRIPT;
     }
 

@@ -4,10 +4,10 @@ namespace Pulli\Pullbox;
 
 class Notification
 {
-    public static function display(string $message, ?string $title = null): void
+    public static function display(string $message, ?string $title = null, ?string $subtitle = null, ?string $soundName = null): void
     {
-        $applescript = AppleScript::displayNotification($message, $title);
-
-        system("osascript -e '$applescript'");
+        AppleScript::execute(
+            AppleScript::displayNotification($message, $title, $subtitle, $soundName)
+        );
     }
 }

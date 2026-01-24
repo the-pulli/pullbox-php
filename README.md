@@ -87,23 +87,32 @@ $result = Dialog::display('Closing soon...', 'Notice', [
 
 ### Notification
 
-Display macOS notifications.
+Display macOS notifications with optional title, subtitle, and sound.
 
 ```php
 use Pulli\Pullbox\Notification;
 
+// Simple notification
+Notification::display('Download complete');
+
 // With title
 Notification::display('Download complete', 'My App');
 
-// Without title
-Notification::display('Download complete');
+// With subtitle
+Notification::display('Download complete', 'My App', 'All files processed');
+
+// With sound
+Notification::display('Download complete', 'My App', null, 'Glass');
+
+// All parameters
+Notification::display('Download complete', 'My App', 'All files processed', 'Frog');
 ```
 
 **Methods:**
 
 | Method | Parameters | Returns |
 |--------|-----------|---------|
-| `display` | `string $message`, `?string $title = null` | `void` |
+| `display` | `string $message`, `?string $title = null`, `?string $subtitle = null`, `?string $soundName = null` | `void` |
 
 ### System
 
@@ -197,17 +206,23 @@ DEVONthink::open('record-uuid');
 
 ### AppleScript
 
-Low-level class for generating AppleScript code strings. Use this if you want to generate scripts without executing them.
+Low-level class for generating and executing AppleScript code. Use this to generate scripts without executing them, or to execute arbitrary scripts safely.
 
 ```php
 use Pulli\Pullbox\AppleScript;
+
+// Execute a script (fire and forget)
+AppleScript::execute($script);
+
+// Execute and capture output
+$result = AppleScript::executeAndCapture($script);
 
 // Escape user input for safe AppleScript string interpolation
 $safe = AppleScript::escapeString('He said "hello"');
 
 // Generate script strings
 $script = AppleScript::displayDialog('Hello', 'Title');
-$script = AppleScript::displayNotification('Done', 'App');
+$script = AppleScript::displayNotification('Done', 'App', 'Subtitle', 'Glass');
 $script = AppleScript::applicationsFolder();
 $script = AppleScript::moveApp('MyApp', '/path/to/app');
 $script = AppleScript::musicExportPlaylist('Playlist', '/path/to/file', 'xml');

@@ -12,9 +12,7 @@ class System
 {
     public static function applicationsFolder(): string
     {
-        $applescript = AppleScript::applicationsFolder();
-
-        return trim(`osascript -e '$applescript'`);
+        return AppleScript::executeAndCapture(AppleScript::applicationsFolder());
     }
 
     public static function moveApp(string $name, string $path, bool $launch = true): void
@@ -25,9 +23,7 @@ class System
             $name .= $appExtension;
         }
 
-        $applescript = AppleScript::moveApp($name, $path, $launch);
-
-        system("osascript -e '$applescript'");
+        AppleScript::execute(AppleScript::moveApp($name, $path, $launch));
     }
 
     public static function versionNumber(string $appName, string $key = 'CFBundleVersion', bool $displayExceptions = true): ?string

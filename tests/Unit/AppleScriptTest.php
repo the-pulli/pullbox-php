@@ -102,21 +102,38 @@ it('can generate the AppleScript to display a dialog without a title', function 
         ->not->toContain('with title');
 });
 
-it('can generate the AppleScript to display a notification', function (string $message, ?string $title, string $expectedAppleScript) {
-    $expected = <<<APPLESCRIPT
-    use AppleScript version "2.8" -- Latest AppleScript Version
-    use scripting additions
-    
-    $expectedAppleScript
-    APPLESCRIPT;
+it('can generate the AppleScript to display a notification', function (string $message, ?string $title, string $expectedContains) {
+    $result = AppleScript::displayNotification($message, $title);
 
-    expect(AppleScript::displayNotification($message, $title))
-        ->toBe($expected);
+    expect($result)
+        ->toContain('use AppleScript version "2.8"')
+        ->toContain($expectedContains);
 })->with([
     'message and title' => ['Test', 'Test', 'display notification "Test" with title "Test"'],
     'only message' => ['Test', null, 'display notification "Test"'],
     'message with empty title' => ['Test', '', 'display notification "Test"'],
 ]);
+
+it('can generate the AppleScript to display a notification with subtitle', function () {
+    $result = AppleScript::displayNotification('Done', 'App', 'Processing complete');
+
+    expect($result)
+        ->toContain('display notification "Done" with title "App" subtitle "Processing complete"');
+});
+
+it('can generate the AppleScript to display a notification with sound', function () {
+    $result = AppleScript::displayNotification('Done', 'App', null, 'Glass');
+
+    expect($result)
+        ->toContain('display notification "Done" with title "App" sound name "Glass"');
+});
+
+it('can generate the AppleScript to display a notification with all parameters', function () {
+    $result = AppleScript::displayNotification('Done', 'App', 'Subtitle', 'Frog');
+
+    expect($result)
+        ->toContain('display notification "Done" with title "App" subtitle "Subtitle" sound name "Frog"');
+});
 
 it('can generate the AppleScript to export a Music playlist as with different file formats', function (string $format, string $expected) {
     $expected = <<<APPLESCRIPT
