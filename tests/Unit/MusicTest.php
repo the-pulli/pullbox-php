@@ -60,7 +60,7 @@ it('uses afplay command for playSystemSound', function () {
 
     expect(AppleScript::lastCommand())
         ->toBe(['afplay', SystemSound::Glass->filepath()]);
-});
+})->group('mac');
 
 it('escapes special characters in playlist name', function () {
     Music::exportPlaylist('My "Best" Playlist', '/tmp/playlist.xml');
