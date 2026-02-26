@@ -2,6 +2,14 @@
 
 All notable changes to `pullbox` will be documented in this file
 
+## v2.0.2 - 2026-02-26
+
+### Fix `createPdfDocumentFrom` creating bookmarks instead of PDFs
+
+- Add `pagination` and `width` parameters to `createPdfDocumentFrom()`
+- Defaults: `pagination false`, `width 1280`
+- Without these params DEVONthink creates bookmarks instead of actual PDF documents
+
 ## v2.0.1 - 2026-01-24
 
 ### What's Changed
