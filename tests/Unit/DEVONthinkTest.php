@@ -484,11 +484,18 @@ it('generates AppleScript for createMarkdownFrom', function () {
         ->toContain('create Markdown from "https://example.com" in (get record with uuid "group-uuid")');
 });
 
-it('generates AppleScript for createPdfDocumentFrom', function () {
+it('generates AppleScript for createPdfDocumentFrom with defaults', function () {
     DEVONthink::createPdfDocumentFrom('https://example.com');
 
     expect(DEVONthink::lastScript())
-        ->toContain('create PDF document from "https://example.com"');
+        ->toContain('create PDF document from "https://example.com" pagination false width 1280');
+});
+
+it('generates AppleScript for createPdfDocumentFrom with custom values', function () {
+    DEVONthink::createPdfDocumentFrom('https://example.com', 'group-uuid', pagination: true, width: 800);
+
+    expect(DEVONthink::lastScript())
+        ->toContain('create PDF document from "https://example.com" pagination true width 800 in (get record with uuid "group-uuid")');
 });
 
 it('generates AppleScript for createFormattedNoteFrom', function () {

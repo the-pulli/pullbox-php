@@ -741,13 +741,18 @@ class DEVONthink
         APPLESCRIPT) ?: null;
     }
 
-    public static function createPdfDocumentFrom(string $url, ?string $groupUuid = null): ?string
-    {
+    public static function createPdfDocumentFrom(
+        string $url,
+        ?string $groupUuid = null,
+        bool $pagination = false,
+        int $width = 1280,
+    ): ?string {
         $escaped = static::escape($url);
         $in = $groupUuid !== null ? sprintf(' in (%s)', static::recordRef($groupUuid)) : '';
+        $paginationStr = $pagination ? 'true' : 'false';
 
         return static::capture(<<<APPLESCRIPT
-            set theRecord to create PDF document from "$escaped"$in
+            set theRecord to create PDF document from "$escaped" pagination $paginationStr width $width$in
             if theRecord is not missing value then return uuid of theRecord as text
         APPLESCRIPT) ?: null;
     }
