@@ -2,6 +2,10 @@
 
 All notable changes to `pullbox` will be documented in this file
 
+## v2.1.0 - 2026-03-17
+
+Add Laravel 13 support for `illuminate/collections`
+
 ## v2.0.2 - 2026-02-26
 
 ### Fix `createPdfDocumentFrom` creating bookmarks instead of PDFs
