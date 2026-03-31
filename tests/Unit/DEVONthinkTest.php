@@ -137,6 +137,36 @@ it('generates AppleScript for update with URL', function () {
         ->toContain('update record theRecord with text "content" mode appending URL "https://example.com"');
 });
 
+it('generates AppleScript for rename', function () {
+    DEVONthink::rename('test-uuid', '2026-03-31_Bank_Kontoauszug');
+
+    expect(DEVONthink::lastScript())
+        ->toContain('set theRecord to get record with uuid "test-uuid"')
+        ->toContain('set name of theRecord to "2026-03-31_Bank_Kontoauszug"');
+});
+
+it('generates AppleScript for setUnread true', function () {
+    DEVONthink::setUnread('test-uuid', true);
+
+    expect(DEVONthink::lastScript())
+        ->toContain('set theRecord to get record with uuid "test-uuid"')
+        ->toContain('set unread of theRecord to true');
+});
+
+it('generates AppleScript for setUnread false', function () {
+    DEVONthink::setUnread('test-uuid', false);
+
+    expect(DEVONthink::lastScript())
+        ->toContain('set unread of theRecord to false');
+});
+
+it('generates AppleScript for markAsRead', function () {
+    DEVONthink::markAsRead('test-uuid');
+
+    expect(DEVONthink::lastScript())
+        ->toContain('set unread of theRecord to false');
+});
+
 // =========================================================================
 // Record Access
 // =========================================================================
