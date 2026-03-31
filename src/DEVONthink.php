@@ -238,6 +238,33 @@ class DEVONthink
         APPLESCRIPT));
     }
 
+    public static function rename(string $uuid, string $name): void
+    {
+        $ref = static::recordRef($uuid);
+        $escaped = static::escape($name);
+
+        static::execute(<<<APPLESCRIPT
+            set theRecord to $ref
+            set name of theRecord to "$escaped"
+        APPLESCRIPT);
+    }
+
+    public static function setUnread(string $uuid, bool $unread): void
+    {
+        $ref = static::recordRef($uuid);
+        $value = $unread ? 'true' : 'false';
+
+        static::execute(<<<APPLESCRIPT
+            set theRecord to $ref
+            set unread of theRecord to $value
+        APPLESCRIPT);
+    }
+
+    public static function markAsRead(string $uuid): void
+    {
+        static::setUnread($uuid, false);
+    }
+
     // =========================================================================
     // Record Access
     // =========================================================================
