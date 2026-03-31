@@ -2,6 +2,14 @@
 
 All notable changes to `pullbox` will be documented in this file
 
+## v2.2.0 - 2026-03-31
+
+### What's New
+
+- `DEVONthink::rename()` — rename a record by UUID
+- `DEVONthink::setUnread()` — set unread state on a record
+- `DEVONthink::markAsRead()` — convenience method to mark a record as read
+
 ## v2.1.0 - 2026-03-17
 
 Add Laravel 13 support for `illuminate/collections`
