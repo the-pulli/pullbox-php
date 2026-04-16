@@ -2,6 +2,13 @@
 
 All notable changes to `pullbox` will be documented in this file
 
+## v3.0.0 - 2026-04-16
+
+### DEVONthink 4 compatibility
+
+- **Fix `ocr()`**: DT4 rejects `ocr theRecord` — now resolves the record's path and calls `ocr file "…"` internally. External signature unchanged, but the source record is no longer OCR'd in place; a new OCR'd record is created alongside it.
+- **BREAKING — `export()` and `exportWebsite()` return `?string` instead of `bool`**: DT4 (and DT3) return the exported POSIX path as text, not a boolean. The previous `bool` return was always `false` due to the broken `parseBool` check, so no working call sites should be affected.
+
 ## v2.2.0 - 2026-03-31
 
 ### What's New

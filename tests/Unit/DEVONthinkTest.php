@@ -637,14 +637,14 @@ it('generates AppleScript for ocr', function () {
 
     expect(DEVONthink::lastScript())
         ->toContain('set theRecord to get record with uuid "image-uuid"')
-        ->toContain('set theOcr to ocr theRecord');
+        ->toContain('set theOcr to ocr file (path of theRecord)');
 });
 
 it('generates AppleScript for ocr with group', function () {
     DEVONthink::ocr('image-uuid', 'group-uuid');
 
     expect(DEVONthink::lastScript())
-        ->toContain('ocr theRecord in (get record with uuid "group-uuid")');
+        ->toContain('ocr file (path of theRecord) to (get record with uuid "group-uuid")');
 });
 
 // =========================================================================

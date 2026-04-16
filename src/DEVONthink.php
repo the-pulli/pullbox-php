@@ -710,15 +710,15 @@ class DEVONthink
         APPLESCRIPT) ?: null;
     }
 
-    public static function export(string $uuid, string $toPath): bool
+    public static function export(string $uuid, string $toPath): ?string
     {
         $ref = static::recordRef($uuid);
         $to = static::escape($toPath);
 
-        return static::parseBool(static::capture(<<<APPLESCRIPT
+        return static::capture(<<<APPLESCRIPT
             set theRecord to $ref
             return (export record theRecord to "$to") as text
-        APPLESCRIPT));
+        APPLESCRIPT) ?: null;
     }
 
     public static function exportTagsOf(string $uuid): string
@@ -731,15 +731,15 @@ class DEVONthink
         APPLESCRIPT);
     }
 
-    public static function exportWebsite(string $uuid, string $toPath): bool
+    public static function exportWebsite(string $uuid, string $toPath): ?string
     {
         $ref = static::recordRef($uuid);
         $to = static::escape($toPath);
 
-        return static::parseBool(static::capture(<<<APPLESCRIPT
+        return static::capture(<<<APPLESCRIPT
             set theRecord to $ref
             return (export website record theRecord to "$to") as text
-        APPLESCRIPT));
+        APPLESCRIPT) ?: null;
     }
 
     // =========================================================================
@@ -916,14 +916,22 @@ class DEVONthink
     // OCR
     // =========================================================================
 
+    /**
+     * DEVONthink 4's `ocr` command only accepts a file path (not a record reference),
+     * and always creates a new OCR'd record rather than OCR'ing in place. This method
+     * resolves the source record's file path and delegates to DT4's `ocr file "…"`.
+     *
+     * @return string|null UUID of the new OCR'd record, or null on failure / if the
+     *                     source record has no file path (e.g. it's a group).
+     */
     public static function ocr(string $uuid, ?string $groupUuid = null): ?string
     {
         $ref = static::recordRef($uuid);
-        $in = $groupUuid !== null ? sprintf(' in (%s)', static::recordRef($groupUuid)) : '';
+        $to = $groupUuid !== null ? sprintf(' to (%s)', static::recordRef($groupUuid)) : '';
 
         return static::capture(<<<APPLESCRIPT
             set theRecord to $ref
-            set theOcr to ocr theRecord$in
+            set theOcr to ocr file (path of theRecord)$to
             if theOcr is not missing value then return uuid of theOcr as text
         APPLESCRIPT) ?: null;
     }

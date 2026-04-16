@@ -1,5 +1,23 @@
 # Upgrade Guide
 
+## From v2.x to v3.0.0
+
+### `export()` and `exportWebsite()` return `?string`
+
+Both methods now return the exported POSIX path (or `null` on failure) instead of a `bool`. The previous `bool` return was always `false` because DEVONthink's `export record` returns the path as text, not a boolean, and the `parseBool` check compared that path against `"true"`. If you were relying on the truthy/falsy result, migrate to:
+
+```php
+// Before
+if (DEVONthink::export($uuid, $dir)) { ... }
+
+// After
+if (DEVONthink::export($uuid, $dir) !== null) { ... }
+```
+
+### `ocr()` behaviour changed
+
+DEVONthink 4 rejects `ocr theRecord`. The method signature is unchanged, but internally it now resolves `path of theRecord` and calls `ocr file "…"`, which creates a **new** OCR'd record alongside the original (previously the original record was OCR'd in place on DT3). If the source record has no file path (e.g. it's a group), the method returns `null`.
+
 ## From v1.0.0 to v2.0.0
 
 ### DEVONthink Class Expanded
